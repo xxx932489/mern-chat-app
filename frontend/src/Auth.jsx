@@ -1,3 +1,4 @@
+// frontend/src/Auth.jsx
 import "./Auth.css";
 import { useState } from "react";
 import axios from "axios";
@@ -15,7 +16,8 @@ function Auth({ setIsLoggedIn, setUsername }) {
     const endpoint = isLoginMode ? "/api/login" : "/api/register";
 
     try {
-      const response = await axios.post(`http://localhost:3001${endpoint}`, {
+      // 🌐 UPDATED: Pointing to the live Render URL
+      const response = await axios.post(`https://mern-chat-backend-8wf3.onrender.com${endpoint}`, {
         username: inputUsername,
         password: inputPassword,
       });

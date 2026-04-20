@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:3001");
+// 🌐 UPDATED: Pointing to the live Render URL
+const socket = io("https://mern-chat-backend-8wf3.onrender.com");
 
 function Chat({ username, setIsLoggedIn }) {
   const [room, setRoom] = useState("");
@@ -12,7 +13,7 @@ function Chat({ username, setIsLoggedIn }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   
-  // NEW STATES & REFS
+  // STATES & REFS
   const [typingUser, setTypingUser] = useState(""); 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -28,7 +29,8 @@ function Chat({ username, setIsLoggedIn }) {
     if (showChat) {
       const fetchHistory = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/api/messages/${room}`);
+          // 🌐 UPDATED: Pointing to the live Render URL
+          const response = await axios.get(`https://mern-chat-backend-8wf3.onrender.com/api/messages/${room}`);
           setMessageList(response.data);
         } catch (error) {
           console.error("Failed to fetch history:", error);
@@ -43,7 +45,7 @@ function Chat({ username, setIsLoggedIn }) {
       setMessageList((prevList) => [...prevList, savedMessage]);
     };
     
-    // NEW: Typing Event Listeners
+    // Typing Event Listeners
     const handleTyping = (user) => setTypingUser(user);
     const handleStopTyping = () => setTypingUser("");
 
@@ -58,12 +60,12 @@ function Chat({ username, setIsLoggedIn }) {
     };
   }, []);
 
-  // NEW: Scroll to bottom automatically
+  // Scroll to bottom automatically
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList, typingUser]);
 
-  // NEW: Handle Typing Logic
+  // Handle Typing Logic
   const handleMessageChange = (e) => {
     setCurrentMessage(e.target.value);
     
@@ -146,7 +148,7 @@ function Chat({ username, setIsLoggedIn }) {
               );
             })}
 
-            {/* NEW: Typing Indicator */}
+            {/* Typing Indicator */}
             {typingUser && (
               <div className="message other">
                 <div className="message-content typing-indicator">
@@ -155,7 +157,7 @@ function Chat({ username, setIsLoggedIn }) {
               </div>
             )}
             
-            {/* NEW: Auto-scroll target */}
+            {/* Auto-scroll target */}
             <div ref={messagesEndRef} />
           </div>
 
