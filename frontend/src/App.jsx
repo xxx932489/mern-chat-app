@@ -24,7 +24,7 @@ function App() {
   }, []);
 
   return (
-    <div className="app-container"> 
+    <> 
       {/* 1. If logged in, show the Chat room */}
       {isLoggedIn ? (
         <Chat username={username} setIsLoggedIn={setIsLoggedIn} />
@@ -42,7 +42,7 @@ function App() {
           />
         )
       )}
-    </div>
+    </>
   );
 }
 
