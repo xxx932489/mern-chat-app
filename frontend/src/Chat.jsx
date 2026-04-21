@@ -100,9 +100,12 @@ function Chat({ username, setIsLoggedIn }) {
     setIsLoggedIn(false);
   };
 
-  return (
-    <div className="app-container" style={{ background: "transparent" }}>
-      {!showChat ? (
+  // --- 100% TERNARY-FREE RENDERING LOGIC BELOW ---
+
+  // Condition 1: If they haven't joined a chat yet, show the Join Room screen and stop.
+  if (!showChat) {
+    return (
+      <div className="app-container" style={{ background: "transparent" }}>
         <div className="auth-box">
           <h2>Join a Room</h2>
           <p style={{ marginBottom: "15px", color: "#555" }}>
@@ -119,60 +122,81 @@ function Chat({ username, setIsLoggedIn }) {
             <button onClick={handleLogout} style={{ flex: 1, background: "#d9534f" }}>Logout</button>
           </div>
         </div>
-      ) : (
-        <div className="chat-window">
-          <div className="chat-header">
-            <h2>Room: {room}</h2>
-            <div className="header-info">
-              <p>User: <strong>{username}</strong></p>
-              <div>
-                <button onClick={() => setShowChat(false)} className="logout-btn" style={{ background: "#f0ad4e", marginRight: "5px" }}>Leave</button>
-                <button onClick={handleLogout} className="logout-btn">Logout</button>
-              </div>
+      </div>
+    );
+  }
+
+  // Condition 2: If showChat is true, the code reaches here and renders the Chat Window!
+  return (
+    <div className="app-container" style={{ background: "transparent" }}>
+      <div className="chat-window">
+        <div className="chat-header">
+          <h2>Room: {room}</h2>
+          <div className="header-info">
+            <p>User: <strong>{username}</strong></p>
+            <div>
+              <button onClick={() => setShowChat(false)} className="logout-btn" style={{ background: "#f0ad4e", marginRight: "5px" }}>Leave</button>
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
             </div>
           </div>
-          
-          <div className="chat-body">
-            {messageList.map((msg) => {
-              const isMe = username === msg.author;
-              return (
-                <div key={msg._id || Math.random()} className={`message ${isMe ? "me" : "other"}`}>
-                  <div className="message-content">
-                    <p className="text">{msg.message}</p>
-                    <div className="meta">
-                      <span className="author">{isMe ? "You" : msg.author}</span>
-                      <span className="time">{msg.time}</span>
-                    </div>
+        </div>
+        
+        <div className="chat-body">
+          {messageList.map((msg) => {
+            const isMe = username === msg.author;
+            
+            // Replaced ternary with standard if statements for styling
+            let messageClass = "message other";
+            let displayName = msg.author;
+            
+            if (isMe) {
+              messageClass = "message me";
+              displayName = "You";
+            }
+
+            return (
+              <div key={msg._id || Math.random()} className={messageClass}>
+                <div className="message-content">
+                  <p className="text">{msg.message}</p>
+                  <div className="meta">
+                    <span className="author">{displayName}</span>
+                    <span className="time">{msg.time}</span>
                   </div>
                 </div>
-              );
-            })}
-
-            {/* Typing Indicator */}
-            {typingUser && (
-              <div className="message other">
-                <div className="message-content typing-indicator">
-                  <p><em>{typingUser} is typing...</em></p>
-                </div>
               </div>
-            )}
-            
-            {/* Auto-scroll target */}
-            <div ref={messagesEndRef} />
-          </div>
+            );
+          })}
 
-          <div className="chat-footer">
-            <input
-              type="text"
-              value={currentMessage}
-              placeholder="Type a message..."
-              onChange={handleMessageChange} 
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <button onClick={sendMessage}>Send</button>
-          </div>
+          {/* Typing Indicator */}
+          {/* Note: The && operator is a logical AND, not a ternary. It is totally fine to keep! */}
+          {typingUser && (
+            <div className="message other">
+              <div className="message-content typing-indicator">
+                <p><em>{typingUser} is typing...</em></p>
+              </div>
+            </div>
+          )}
+          
+          {/* Auto-scroll target */}
+          <div ref={messagesEndRef} />
         </div>
-      )}
+
+        <div className="chat-footer">
+          <input
+            type="text"
+            value={currentMessage}
+            placeholder="Type a message..."
+            onChange={handleMessageChange} 
+            // Replaced onKeyDown ternary with a standard if statement
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendMessage();
+              }
+            }}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </div>
+      </div>
     </div>
   );
 }
