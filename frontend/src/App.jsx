@@ -1,18 +1,16 @@
 // frontend/src/App.jsx
-import "./App.css";
 import { useState, useEffect } from "react";
 import Login from "./Login";
 import Register from "./Register";
 import Chat from "./Chat";
+import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
-  
-  // NEW: State to track which auth screen to show
-  const [showLogin, setShowLogin] = useState(true); 
+  const [showLogin, setShowLogin] = useState(true);
 
-  // When the app loads, check if the user already has a token saved in their browser
+  // When the app loads, check local storage
   useEffect(() => {
     const token = localStorage.getItem("chat_token");
     const savedUsername = localStorage.getItem("chat_username");
@@ -23,26 +21,30 @@ function App() {
     }
   }, []);
 
+  // --- 100% TERNARY-FREE LOGIC ---
+
+  // Condition 1: If logged in, show the chat room and stop.
+  if (isLoggedIn) {
+    return <Chat username={username} setIsLoggedIn={setIsLoggedIn} />;
+  }
+
+  // Condition 2: If NOT logged in, but they want to see the Login page.
+  if (showLogin) {
+    return (
+      <Login
+        setIsLoggedIn={setIsLoggedIn}
+        setUsername={setUsername}
+        showRegisterPage={() => setShowLogin(false)}
+      />
+    );
+  }
+
+  // Condition 3: If not logged in and not on the login page, 
+  // show the Register page!
   return (
-    <> 
-      {/* 1. If logged in, show the Chat room */}
-      {isLoggedIn ? (
-        <Chat username={username} setIsLoggedIn={setIsLoggedIn} />
-      ) : (
-        /* 2. If NOT logged in, check which Auth page to show */
-        showLogin ? (
-          <Login 
-            setIsLoggedIn={setIsLoggedIn} 
-            setUsername={setUsername} 
-            showRegisterPage={() => setShowLogin(false)} 
-          />
-        ) : (
-          <Register 
-            showLoginPage={() => setShowLogin(true)} 
-          />
-        )
-      )}
-    </>
+    <Register 
+      showLoginPage={() => setShowLogin(true)} 
+    />
   );
 }
 
