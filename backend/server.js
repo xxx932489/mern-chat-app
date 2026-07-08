@@ -12,13 +12,13 @@ const User = require("./models/User");
 
 const app = express();
 
-// UPDATED: Open CORS for all origins to ensure Vercel can communicate
+// Open CORS for all origins to ensure Vercel can communicate
 app.use(cors({ origin: "*" })); 
 app.use(express.json()); 
 
 const server = http.createServer(app);
 
-// UPDATED: Changed origin from "localhost" to "*" so it works on the live web
+// Changed origin from "localhost" to "*" so it works on the live web
 const io = new Server(server, {
   cors: {
     origin: "*", 
@@ -46,6 +46,8 @@ app.post("/api/register", async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: "Account created successfully!" });
   } catch (error) {
+    // PRINT THE EXACT CRASH IN RENDER LOGS
+    console.error("🔥 REGISTRATION CRASH ERROR:", error);
     res.status(500).json({ error: "Server error during registration." });
   }
 });
@@ -67,6 +69,8 @@ app.post("/api/login", async (req, res) => {
     );
     res.status(200).json({ token, username: user.username });
   } catch (error) {
+    // PRINT THE EXACT CRASH IN RENDER LOGS
+    console.error("🔥 LOGIN CRASH ERROR:", error);
     res.status(500).json({ error: "Server error during login." });
   }
 });
